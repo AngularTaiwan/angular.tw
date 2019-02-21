@@ -1,0 +1,149 @@
+resources:
+- repo: self
+
+pool:
+  vmImage: Hosted Ubuntu 1604
+steps:
+- script: pwd
+  displayName: 'Check PWD'
+
+- script: |
+   lsb_release -a
+
+  displayName: 'Check Ubuntu Version'
+
+- script: |
+   sudo apt-get install -y build-essential cmake doxygen
+
+   cd $(Agent.BuildDirectory)
+
+   wget https://github.com/BYVoid/OpenCC/archive/ver.1.0.5.tar.gz
+   tar zxf ver.1.0.5.tar.gz
+   cd OpenCC-ver.1.0.5
+   make
+   sudo make install
+
+   cd ..
+
+   rm -rf OpenCC-ver.1.0.5
+   rm -f ver.1.0.5.tar.gz
+
+  displayName: 'Install OpenCC'
+
+- script: |
+   cd $(Agent.BuildDirectory)
+
+   OPENCC=/usr/share/opencc
+
+   curl -sSL -o TEMP-TWPhrasesAngular.txt https://gist.githubusercontent.com/doggy8088/5d965d7219413fdabe586212e3d4700b/raw/ec43758a1f1dfd31d419bf8b55a6d0d59f8dcefb/TEMP-TWPhrasesAngular.txt
+
+   curl -sSL -o TEMP-STPhrasesAngular.txt https://gist.githubusercontent.com/doggy8088/57b77b625e60b337fd96001b2e7c4b0e/raw/234c651b88c98da92e5265f52168d3f891b4192c/TEMP-STPhrasesAngular.txt
+
+   sudo opencc_dict -f text -t ocd -i TEMP-STPhrasesAngular.txt -o $OPENCC/STPhrases-Angular.ocd
+
+   sudo opencc_dict -f text -t ocd -i TEMP-TWPhrasesAngular.txt -o $OPENCC/TWPhrases-Angular.ocd
+
+   cat <<EOF | sudo tee $OPENCC/s2twp-Angular.json
+   {
+       "name": "Simplified Chinese to Traditional Chinese (Taiwan standard, with phrases, with Angular)",
+       "segmentation": {
+           "type": "mmseg",
+           "dict": {
+               "type": "ocd",
+               "file": "STPhrases-Angular.ocd"
+           }
+       },
+       "conversion_chain": [
+           {
+               "dict": {
+                   "type": "group",
+                   "dicts": [
+                       {
+                           "type": "ocd",
+                           "file": "STPhrases-Angular.ocd"
+                       },
+                       {
+                           "type": "ocd",
+                           "file": "STCharacters.ocd"
+                       }
+                   ]
+               }
+           },
+           {
+               "dict": {
+                   "type": "ocd",
+                   "file": "TWPhrases-Angular.ocd"
+               }
+           },
+           {
+               "dict": {
+                   "type": "ocd",
+                   "file": "TWVariants.ocd"
+               }
+           }
+       ]
+   }
+   EOF
+
+   ls -laF $OPENCC/
+
+  displayName: 'Make Angular Dict for OpenCC'
+
+- script: |
+   sudo apt install uni2ascii -y
+
+   dpkg -L uni2ascii
+
+
+  displayName: 'Install uni2ascii'
+
+- script: |
+   find . -name '*.html'   -type f -exec echo '{}' \; -exec opencc -c s2twp-Angular -i '{}' -o '{}' \;
+
+   find . -name '*.json'   -type f -exec echo '{}' \; -exec opencc -c s2twp-Angular -i '{}' -o '{}' \;
+
+   find . -name '*.js.map' -type f -exec echo '{}' \; -exec opencc -c s2twp-Angular -i '{}' -o '{}'
+
+   find . -name '*.js' -type f -exec echo '{}' \; -exec sh -c 'ascii2uni -a U -q {} > {}.new' \; -exec sh -c 'mv {}.new {}' \; -exec opencc -c s2twp-Angular -i '{}' -o '{}' \;
+
+  displayName: 'Run S2T Conversion'
+
+- script: |
+   cat <<EOF > web.config
+   <?xml version="1.0"?>
+   <configuration>
+       <system.webServer>
+           <staticContent>
+               <mimeMap fileExtension=".json" mimeType="application/json" />
+           </staticContent>
+           <rewrite>
+             <rules>
+               <rule name="SPA" stopProcessing="true">
+                 <match url=".*" />
+                 <action type="Rewrite" url="/" />
+                 <conditions>
+                   <add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" />
+                 </conditions>
+               </rule>
+             </rules>
+           </rewrite>
+       </system.webServer>
+   </configuration>
+   EOF
+
+  displayName: 'Add web.config'
+
+- script: 'find . -type f -name ''*.css' -exec sed -i 's/font-family:Roboto/font-family:"Microsoft JhengHei",Roboto/g' '{}' \;'
+  displayName: 'Fix CSS font-family'
+
+- script: |
+   curl -sSL -o ./generated/navigation.json https://gist.githubusercontent.com/doggy8088/fd2beb038238d364e91d971bdfd80b3c/raw/a136eebee52fb3b4fd4f12bb380a73cd7c1863a3/navigation.json
+
+  displayName: 'Fix Menu items'
+
+- script: 'rsync -av . $(Build.ArtifactStagingDirectory) --exclude .git --exclude .github'
+  displayName: 'Copy to StagingDirectory'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+
