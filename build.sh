@@ -33,7 +33,7 @@ echo "測試結果"
 # opencc -c angular -i /mnt/g/a.txt -o /mnt/g/b.txt
 # cat generated/docs/features.json | opencc -c angular | grep 自動完成
 
-echo '腻子脚本包<' | opencc -c angular
+echo '在这个例子中，只有发到 npm 包搜索 API 的 GET 请求才是可以缓存的。这些包可以发布到 npm 服务器、一个私有的 npm 企业版服务器，或一个支持 npm 包的私有包管理系统。Angular CLI 会安装必要的 Angular npm 包及其它依赖。这可能要花几分钟。' | opencc -c angular
 
 # 智能代码补全
 
