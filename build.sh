@@ -33,7 +33,7 @@ echo "測試結果"
 # opencc -c angular -i /mnt/g/a.txt -o /mnt/g/b.txt
 # cat generated/docs/features.json | opencc -c angular | grep 自動完成
 
-echo '下列属性位于文件的顶级，用于配置工作空间。对于工作区中的每个项目（应用或库）都会包含一个子分区，子分区中是每个项目的配置项。' | opencc -c angular
+echo '显示表单控件的值' | opencc -c angular
 
 # 智能代码补全
 
