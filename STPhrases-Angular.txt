@@ -13,3 +13,4 @@
 分类	分類
 类	類別
 回调	回呼(Callback)
+腻子脚本	Polyfill

@@ -33,7 +33,7 @@ echo "測試結果"
 # opencc -c angular -i /mnt/g/a.txt -o /mnt/g/b.txt
 # cat generated/docs/features.json | opencc -c angular | grep 自動完成
 
-echo '<a href=\"guide/npm-packages\">npm 包</a>Angular CLI 会安装必要的 Angular npm 包和其它依赖项。这可能需要几分钟。你可以使用 npm CLI client 来下载并安装这些 npm 包，它通过 Node.js® 安装并运行。默认情况下，Angular CLI 会使用 npm 客户端。当你用 npm 包安装该库时，它就映射到 node_modules 目录下。' | opencc -c angular
+echo '腻子脚本包<' | opencc -c angular
 
 # 智能代码补全
 
