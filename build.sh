@@ -33,7 +33,7 @@ echo "測試結果"
 # opencc -c angular -i /mnt/g/a.txt -o /mnt/g/b.txt
 # cat generated/docs/features.json | opencc -c angular | grep 自動完成
 
-echo '下面的例子定义了一个带有只读数据的大型列表，这些数据预计每秒会变化很多次。- 实例的属性却是只读 -如果为 true，则每次变更只影响该控件本身，不影响其父控件。默认为 false。差异化加载是一种策略，它能让你的应用支持多种浏览器，但是只加载当前浏览器必须用到的代码。虽然把组件加到这个列表中也没什么坏处，不过最好还是只添加真正的入口组件。 不要添加那些被其它组件的模板引用过的组件。也就是说，在指定的注入器中最多只有某个服务的最多一个实例。你想要完整的响应信息，而不是只有响应体：总之，你希望的是只有当所有必要数据都已经拿到之后，才渲染这个路由组件。 不过这只有当 Angular 组件需要的恰好是该测试的根注入器时才能正常工作。不过，这种切换只发生在该组件元素的子节点上。可升级组件的简单例子是只有一个模板和一个控制器的指令：这只展示了一个英雄。要想把他们都列出来，就要为 <li> 添加一个 *ngFor 以便迭代出列表中的所有英雄：' | opencc -c angular
+echo '<a href=\"guide/npm-packages\">npm 包</a>Angular CLI 会安装必要的 Angular npm 包和其它依赖项。这可能需要几分钟。你可以使用 npm CLI client 来下载并安装这些 npm 包，它通过 Node.js® 安装并运行。默认情况下，Angular CLI 会使用 npm 客户端。当你用 npm 包安装该库时，它就映射到 node_modules 目录下。' | opencc -c angular
 
 # 智能代码补全
 
